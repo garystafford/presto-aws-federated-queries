@@ -1,5 +1,3 @@
--- https://docs.cloudera.com/runtime/7.0.1/using-hiveql/topics/hive-create-s3-based-table.html
-
 CREATE EXTERNAL TABLE `customer`(
   `c_customer_sk` bigint, 
   `c_customer_id` string, 
