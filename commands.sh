@@ -1,3 +1,5 @@
+yes | sudo yum update
+
 presto-cli --catalog tpcds --schema sf1
 
 # Create second datasource
@@ -46,12 +48,30 @@ scp -i "~/.ssh/ahana-presto.pem" ec2-user@ec2-100-24-122-163.compute-1.amazonaws
 export JAVA_HOME=/usr
 export HADOOP_HOME=~/hadoop/
 export HADOOP_CLASSPATH=${HADOOP_HOME}/share/hadoop/tools/lib/*
-hive/bin/hive
+export HIVE_HOME=~/hive/
+export PATH=${HIVE_HOME}/bin:${PATH}
+hive
 
+java -version
+openjdk version "1.8.0_252"
+OpenJDK Runtime Environment (build 1.8.0_252-b09)
+OpenJDK 64-Bit Server VM (build 25.252-b09, mixed mode)
 
-hive/bin/hive -e """
-SELECT
-    COUNT(*)
-FROM
-    tpcds.sf1.customer_address
-""" > ~/sample_output.txt
+hadoop/bin/hadoop version
+Hadoop 2.9.2
+
+postgres --version
+postgres (PostgreSQL) 9.2.24
+
+hive --version
+Hive 2.3.7
+
+presto-cli --version
+Presto CLI 0.235-cb21100
+
+psql -l
+
+sudo -u ec2-user psql hive
+
+cat /etc/presto/config.properties
+cat /etc/presto/catalog/postgresql.properties

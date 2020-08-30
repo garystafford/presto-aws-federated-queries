@@ -1,0 +1,3 @@
+- <https://www.tutorialspoint.com/hive/hive_create_database.htm>  
+- <https://docs.cloudera.com/runtime/7.0.1/using-hiveql/topics/hive-create-s3-based-table.html>  
+- <https://prestodb.io/docs/current/connector.html>  

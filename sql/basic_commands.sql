@@ -9,6 +9,9 @@ SHOW SCHEMAS FROM tpcds;
 USE tpcds.sf1;
 SHOW TABLES;
 
+SHOW SCHEMAS FROM postgresql;
+USE postgresql.public;
+SHOW TABLES;
 
 -- HIVE
 CREATE SCHEMA IF NOT EXISTS tpcds;
@@ -27,3 +30,7 @@ set fs.s3.awsSecretAccessKey=123;
 
 set fs.s3n.awsAccessKeyId=ABC;
 set fs.s3n.awsSecretAccessKey=123;
+
+
+\dt
+\q

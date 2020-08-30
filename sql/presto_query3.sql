@@ -17,12 +17,12 @@ SELECT
             0
         END) AS sales_after
 FROM
-    tpcds.sf1.catalog_sales
-    LEFT OUTER JOIN tpcds.sf1.catalog_returns ON (cs_item_sk = cr_item_sk
+    tpcds.sf100.catalog_sales
+    LEFT OUTER JOIN tpcds.sf100.catalog_returns ON (cs_item_sk = cr_item_sk
         AND cs_order_number = cr_order_number),
-    tpcds.sf1.warehouse,
-    tpcds.sf1.item,
-    tpcds.sf1.date_dim
+    tpcds.sf100.warehouse,
+    tpcds.sf100.item,
+    tpcds.sf100.date_dim
 WHERE
     i_current_price BETWEEN 0.99
     AND 1.49
