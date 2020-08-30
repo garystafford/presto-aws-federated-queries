@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This template deploys a RDS PostgreSQL database and an Amazon S3 bucket"
+Parameters:
+  DBInstanceIdentifier:
+    Type: String
+    Default: "ahana-prestodb-demo"
+  DBEngine:
+    Type: String
+    Default: "postgres"
+  DBEngineVersion:
+    Type: String
+    Default: "12.3"
+  DBAvailabilityZone:
+    Type: String
+    Default: "us-east-1f"
+  DBInstanceClass:
+    Type: String
+    Default: "db.t3.medium"
+  DBStorageType:
+    Type: String
+    Default: "gp2"
+  DBAllocatedStorage:
+    Type: Number
+    Default: 20
+  DBName:
+    Type: String
+    Default: "shipping"
+  DBUser:
+    Type: String
+    Default: "presto"
+  DBPassword:
+    Type: String
+    Default: "5up3r53cr3tPa55w0rd"
+    # NoEcho: True
+Resources:
+  MasterDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Ref: DBInstanceIdentifier
+      DBName:
+        Ref: DBName
+      AllocatedStorage:
+        Ref: DBAllocatedStorage
+      DBInstanceClass:
+        Ref: DBInstanceClass
+      StorageType:
+        Ref: DBStorageType
+      Engine:
+        Ref: DBEngine
+      EngineVersion:
+        Ref: DBEngineVersion
+      MasterUsername:
+        Ref: DBUser
+      MasterUserPassword:
+        Ref: DBPassword
+      AvailabilityZone: !Ref DBAvailabilityZone
+      PubliclyAccessible: true
+      Tags:
+      - Key: Project
+        Value: "Demo of RDS PostgreSQL"
+  DataBucket:
+    DeletionPolicy: Retain
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+Outputs:
+  Endpoint:
+    Description: "Endpoint of RDS PostgreSQL database"
+    Value: !GetAtt MasterDatabase.Endpoint.Address
+  Port:
+    Description: "Port of RDS PostgreSQL database"
+    Value: !GetAtt MasterDatabase.Endpoint.Port
+  JdbcConnString:
+    Description: "JDBC connection string of RDS PostgreSQL database"
+    Value: !Join
+      - ""
+      - - "jdbc:postgresql://"
+        - !GetAtt MasterDatabase.Endpoint.Address
+        - ":"
+        - !GetAtt MasterDatabase.Endpoint.Port
+        - "/"
+        - !Ref DBName
+        - "?user="
+        - !Ref DBUser
+        - "&password="
+        - !Ref DBPassword
+  Bucket:
+    Description: "Name of Amazon S3 data bucket"
+    Value: !Ref DataBucket

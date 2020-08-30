@@ -1,10 +1,20 @@
+scp -i "~/.ssh/ahana-presto.pem" \
+    rds_postgresql.properties \
+    ec2-user@ec2-100-24-122-163.compute-1.amazonaws.com:~/
+
+sudo mv rds_postgresql.properties /etc/presto/catalog/
+
+sudo reboot
+
 yes | sudo yum update
 
 presto-cli --catalog tpcds --schema sf1
 
 # Create second datasource
+DATA_BUCKET=prestodb-demo-databucket-v8gbj2fr6vcc
+
 aws s3 ls
-aws s3api create-bucket --bucket garystaf-prestodb-tpcds-customers
+aws s3api create-bucket --bucket ${DATA_BUCKET}
 
 echo """
 SELECT
@@ -39,8 +49,8 @@ sed 's/\"//g' customer_address_quoted.csv > customer_address.csv
 head -5 customer.csv
 head -5 customer_address.csv
 
-aws s3 cp customer.csv s3://garystaf-prestodb-tpcds-customers/customer/
-aws s3 cp customer_address.csv s3://garystaf-prestodb-tpcds-customers/customer_address/
+aws s3 cp customer.csv s3://${DATA_BUCKET}/customer/
+aws s3 cp customer_address.csv s3://${DATA_BUCKET}/customer_address/
 
 scp -i "~/.ssh/ahana-presto.pem" ec2-user@ec2-100-24-122-163.compute-1.amazonaws.com:~/customer.csv .
 
@@ -75,3 +85,8 @@ sudo -u ec2-user psql hive
 
 cat /etc/presto/config.properties
 cat /etc/presto/catalog/postgresql.properties
+
+# Access RDS from psql on presto EC2
+export PGPASSWORD=5up3r53cr3tPa55w0rd
+psql -h presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com -p 5432 -d shipping \
+-U presto

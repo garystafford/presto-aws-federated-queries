@@ -34,3 +34,5 @@ set fs.s3n.awsSecretAccessKey=123;
 -- postgresql
 \dt
 \q
+
+SELECT COUNT(*) FROM rds_postgresql.public.customer_address;

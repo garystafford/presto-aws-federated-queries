@@ -15,7 +15,7 @@ CREATE TABLE customer_address (
     PRIMARY KEY (ca_address_sk)
 );
 
-ALTER TABLE customer_address OWNER TO hive;
+-- ALTER TABLE customer_address OWNER TO hive;
 
 \COPY customer_address (ca_address_sk, ca_address_id, ca_street_number, ca_street_name, ca_street_type, ca_suite_number, ca_city, ca_county, ca_state, ca_zip, ca_country, ca_gmt_offset, ca_location_type) FROM '/home/ec2-user/customer_address.csv' DELIMITER ',' CSV HEADER;
 

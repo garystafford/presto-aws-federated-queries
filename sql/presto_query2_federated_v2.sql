@@ -9,7 +9,7 @@ WITH customer_total_return AS (
     FROM
         tpcds.sf1.catalog_returns,
         tpcds.sf1.date_dim,
-        postgresql.public.customer_address
+        rds_postgresql.public.customer_address
     WHERE
         cr_returned_date_sk = d_date_sk
         AND d_year = 1998
@@ -37,7 +37,7 @@ SELECT
     ctr_return
 FROM
     customer_total_return ctr1,
-    postgresql.public.customer_address,
+    rds_postgresql.public.customer_address,
     hive.default.customer
 WHERE
     ctr1.ctr_return > (

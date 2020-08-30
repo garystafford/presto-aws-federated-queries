@@ -9,5 +9,12 @@
       <jdbc-driver>com.facebook.presto.jdbc.PrestoDriver</jdbc-driver>
       <jdbc-url>jdbc:presto://ec2-100-24-122-163.compute-1.amazonaws.com:8080</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="Amazon RDS for PostgreSQL" uuid="702dee44-0e26-4432-968b-c8a4d594eb62">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <remarks>Amazon RDS for PostgreSQL</remarks>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com:5432/shipping</jdbc-url>
+    </data-source>
   </component>
 </project>
