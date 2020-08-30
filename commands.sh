@@ -43,8 +43,12 @@ presto-cli \
   --output-format CSV_HEADER >customer_address_quoted.csv
 
 # sed 's/"\([[:digit:]]\+\)"/\1/g' customer_quoted.csv > customer.csv
-sed 's/\"//g' customer_quoted.csv > customer.csv
-sed 's/\"//g' customer_address_quoted.csv > customer_address.csv
+
+# remove start and end line double quotes
+# remove extra spaces on fixed width columns
+# removes double quotes between fields
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' customer_quoted.csv > customer.csv
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' customer_address_quoted.csv > customer_address.csv
 
 head -5 customer.csv
 head -5 customer_address.csv
@@ -56,10 +60,11 @@ scp -i "~/.ssh/ahana-presto.pem" ec2-user@ec2-100-24-122-163.compute-1.amazonaws
 
 # configure and use Apache Hive
 export JAVA_HOME=/usr
-export HADOOP_HOME=~/hadoop/
-export HADOOP_CLASSPATH=${HADOOP_HOME}/share/hadoop/tools/lib/*
-export HIVE_HOME=~/hive/
-export PATH=${HIVE_HOME}/bin:${PATH}
+export HADOOP_HOME=~/hadoop
+export HADOOP_CLASSPATH="${HADOOP_HOME}/share/hadoop/tools/lib/*"
+export HIVE_HOME=~/hive
+export PATH="${HIVE_HOME}/bin:${HADOOP_HOME}/bin:${PATH}"
+
 hive
 
 java -version
@@ -67,11 +72,14 @@ openjdk version "1.8.0_252"
 OpenJDK Runtime Environment (build 1.8.0_252-b09)
 OpenJDK 64-Bit Server VM (build 25.252-b09, mixed mode)
 
-hadoop/bin/hadoop version
+hadoop version
 Hadoop 2.9.2
 
 postgres --version
 postgres (PostgreSQL) 9.2.24
+
+psql --version
+psql (PostgreSQL) 9.2.24
 
 hive --version
 Hive 2.3.7
@@ -83,8 +91,10 @@ psql -l
 
 sudo -u ec2-user psql hive
 
+cat /etc/presto/jvm.config
 cat /etc/presto/config.properties
-cat /etc/presto/catalog/postgresql.properties
+cat /etc/presto/node.properties
+cat /etc/presto/catalog/rds_postgresql.properties
 
 # Access RDS from psql on presto EC2
 export PGPASSWORD=5up3r53cr3tPa55w0rd
