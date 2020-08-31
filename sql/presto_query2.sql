@@ -67,4 +67,3 @@ ORDER BY
     ca_gmt_offset,
     ca_location_type,
     ctr_return;
-

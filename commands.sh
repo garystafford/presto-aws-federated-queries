@@ -1,45 +1,61 @@
+DATA_BUCKET=prestodb-demo-databucket-v8gbj2fr6vcc
+EC2_ENDPOINT=ec2-34-231-243-251.compute-1.amazonaws.com
+POSTGRES=presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com
+
 scp -i "~/.ssh/ahana-presto.pem" \
-    rds_postgresql.properties \
-    ec2-user@ec2-100-24-122-163.compute-1.amazonaws.com:~/
+    properties/rds_postgresql.properties \
+    ec2-user@${EC2_ENDPOINT}:~/
+
+ssh -i "~/.ssh/ahana-presto.pem" ec2-user@${EC2_ENDPOINT}
+
+yes | sudo yum update
+yes | sudo yum install htop
 
 sudo mv rds_postgresql.properties /etc/presto/catalog/
 
 sudo reboot
 
-yes | sudo yum update
+# presto-cli --catalog tpcds --schema sf1
 
-presto-cli --catalog tpcds --schema sf1
+# aws s3 ls
+# aws s3api create-bucket --bucket ${DATA_BUCKET}
 
-# Create second datasource
-DATA_BUCKET=prestodb-demo-databucket-v8gbj2fr6vcc
+# echo """
+# SELECT
+#     *
+# FROM
+#     tpcds.sf1.customer;
+# """ >customer.sql
 
-aws s3 ls
-aws s3api create-bucket --bucket ${DATA_BUCKET}
+# echo """
+# SELECT
+#     *
+# FROM
+#     tpcds.sf1.customer_address;
+# """ >customer_address.sql
 
-echo """
-SELECT
-    *
-FROM
-    tpcds.sf1.customer;
-""" >customer.sql
+# presto-cli \
+#   --catalog tpcds \
+#   --schema sf1 \
+#   --file customer.sql \
+#   --output-format CSV_HEADER >customer_quoted.csv
 
-echo """
-SELECT
-    *
-FROM
-    tpcds.sf1.customer_address;
-""" >customer_address.sql
+# presto-cli \
+#   --catalog tpcds \
+#   --schema sf1 \
+#   --file customer_address.sql \
+#   --output-format CSV_HEADER >customer_address_quoted.csv
 
 presto-cli \
   --catalog tpcds \
   --schema sf1 \
-  --file customer.sql \
+  --execute "SELECT * FROM tpcds.sf1.customer;" \
   --output-format CSV_HEADER >customer_quoted.csv
 
 presto-cli \
   --catalog tpcds \
   --schema sf1 \
-  --file customer_address.sql \
+  --execute "SELECT * FROM tpcds.sf1.customer_address;" \
   --output-format CSV_HEADER >customer_address_quoted.csv
 
 # sed 's/"\([[:digit:]]\+\)"/\1/g' customer_quoted.csv > customer.csv
@@ -56,7 +72,7 @@ head -5 customer_address.csv
 aws s3 cp customer.csv s3://${DATA_BUCKET}/customer/
 aws s3 cp customer_address.csv s3://${DATA_BUCKET}/customer_address/
 
-scp -i "~/.ssh/ahana-presto.pem" ec2-user@ec2-100-24-122-163.compute-1.amazonaws.com:~/customer.csv .
+# scp -i "~/.ssh/ahana-presto.pem" ec2-user@ec2-100-24-122-163.compute-1.amazonaws.com:~/customer.csv .
 
 # configure and use Apache Hive
 export JAVA_HOME=/usr
@@ -66,6 +82,7 @@ export HIVE_HOME=~/hive
 export PATH="${HIVE_HOME}/bin:${HADOOP_HOME}/bin:${PATH}"
 
 hive
+# copy and paste sql commands
 
 java -version
 openjdk version "1.8.0_252"
@@ -89,7 +106,7 @@ Presto CLI 0.235-cb21100
 
 psql -l
 
-sudo -u ec2-user psql hive
+# sudo -u ec2-user psql hive
 
 cat /etc/presto/jvm.config
 cat /etc/presto/config.properties
@@ -98,5 +115,5 @@ cat /etc/presto/catalog/rds_postgresql.properties
 
 # Access RDS from psql on presto EC2
 export PGPASSWORD=5up3r53cr3tPa55w0rd
-psql -h presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com -p 5432 -d shipping \
--U presto
+psql -h ${POSTGRES} -p 5432 -d shipping -U presto
+# copy and paste sql commands
