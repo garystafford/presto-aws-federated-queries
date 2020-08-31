@@ -1,5 +1,8 @@
 -- Modified version of
 -- Figure 7: Reporting Query (Query 40)
+-- http://www.tpc.org/tpcds/presentations/tpcds_workload_analysis.pdf
+
+USE tpcds.sf1
 
 WITH customer_total_return AS (
     SELECT
@@ -7,9 +10,9 @@ WITH customer_total_return AS (
         ca_state AS ctr_state,
         sum(cr_return_amt_inc_tax) AS ctr_return
     FROM
-        tpcds.sf1.catalog_returns,
-        tpcds.sf1.date_dim,
-        tpcds.sf1.customer_address
+        catalog_returns,
+        date_dim,
+        customer_address
     WHERE
         cr_returned_date_sk = d_date_sk
         AND d_year = 1998
@@ -37,8 +40,8 @@ SELECT
     ctr_return
 FROM
     customer_total_return ctr1,
-    tpcds.sf1.customer_address,
-    tpcds.sf1.customer
+    customer_address,
+    customer
 WHERE
     ctr1.ctr_return > (
         SELECT

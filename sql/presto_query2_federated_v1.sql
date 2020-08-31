@@ -1,5 +1,6 @@
 -- Modified version of
 -- Figure 7: Reporting Query (Query 40)
+-- http://www.tpc.org/tpcds/presentations/tpcds_workload_analysis.pdf
 
 WITH customer_total_return AS (
     SELECT

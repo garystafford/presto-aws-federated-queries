@@ -1,3 +1,7 @@
+-- Modified version of
+-- Figure 9: Iterative Query (Query 24)
+-- http://www.tpc.org/tpcds/presentations/tpcds_workload_analysis.pdf
+
 USE tpcds.sf1
 
 WITH cross_sales AS (

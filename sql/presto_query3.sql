@@ -1,5 +1,6 @@
 -- Modified version of
 -- Figure 6: CPU Intensive Query (Query 70)
+-- http://www.tpc.org/tpcds/presentations/tpcds_workload_analysis.pdf
 
 SELECT
     w_state,
