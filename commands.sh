@@ -1,6 +1,4 @@
-DATA_BUCKET=prestodb-demo-databucket-v8gbj2fr6vcc
 EC2_ENDPOINT=ec2-34-231-243-251.compute-1.amazonaws.com
-POSTGRES=presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com
 
 scp -i "~/.ssh/ahana-presto.pem" \
     properties/rds_postgresql.properties \
@@ -14,6 +12,10 @@ yes | sudo yum install htop
 sudo mv rds_postgresql.properties /etc/presto/catalog/
 
 sudo reboot
+
+DATA_BUCKET=prestodb-demo-databucket-v8gbj2fr6vcc
+EC2_ENDPOINT=ec2-34-231-243-251.compute-1.amazonaws.com
+POSTGRES=presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com
 
 # presto-cli --catalog tpcds --schema sf1
 
@@ -81,9 +83,6 @@ export HADOOP_CLASSPATH="${HADOOP_HOME}/share/hadoop/tools/lib/*"
 export HIVE_HOME=~/hive
 export PATH="${HIVE_HOME}/bin:${HADOOP_HOME}/bin:${PATH}"
 
-hive
-# copy and paste sql commands
-
 java -version
 openjdk version "1.8.0_252"
 OpenJDK Runtime Environment (build 1.8.0_252-b09)
@@ -112,6 +111,20 @@ cat /etc/presto/jvm.config
 cat /etc/presto/config.properties
 cat /etc/presto/node.properties
 cat /etc/presto/catalog/rds_postgresql.properties
+
+scp -i "~/.ssh/ahana-presto.pem" \
+    ahana_presto_aws/sql/hive_customer.sql \
+    ec2-user@${EC2_ENDPOINT}:~/
+
+scp -i "~/.ssh/ahana-presto.pem" \
+    ahana_presto_aws/sql/hive_customer_address.sql \
+    ec2-user@${EC2_ENDPOINT}:~/
+
+hive
+# copy and paste sql commands
+
+hive -f hive_customer.sql
+hive -f hive_customer_address.sql
 
 # Access RDS from psql on presto EC2
 export PGPASSWORD=5up3r53cr3tPa55w0rd
