@@ -130,3 +130,9 @@ hive -f hive_customer_address.sql
 export PGPASSWORD=5up3r53cr3tPa55w0rd
 psql -h ${POSTGRES} -p 5432 -d shipping -U presto
 # copy and paste sql commands
+
+
+presto-cli \
+  --catalog tpcds \
+  --schema sf1 \
+  --file presto_query2.sql

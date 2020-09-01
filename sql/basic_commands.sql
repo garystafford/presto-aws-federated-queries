@@ -31,8 +31,4 @@ set fs.s3.awsSecretAccessKey=123;
 set fs.s3n.awsAccessKeyId=ABC;
 set fs.s3n.awsSecretAccessKey=123;
 
--- postgresql
-\dt
-\q
-
 SELECT COUNT(*) FROM rds_postgresql.public.customer_address;

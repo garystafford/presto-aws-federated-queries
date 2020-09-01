@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="PrestoDB Sandbox by Ahana on AWS" uuid="06a78a80-0e5b-4045-a844-7f44289e2d2f">
+    <data-source source="LOCAL" name="Ahana PrestoDB Sandbox" uuid="06a78a80-0e5b-4045-a844-7f44289e2d2f">
       <driver-ref>java.sql.Driver</driver-ref>
       <synchronize>true</synchronize>
       <configured-by-url>true</configured-by-url>
-      <remarks>PrestoDB Sandbox by Ahana on AWS</remarks>
+      <remarks>Ahana PrestoDB Sandbox on AWS</remarks>
       <jdbc-driver>com.facebook.presto.jdbc.PrestoDriver</jdbc-driver>
       <jdbc-url>jdbc:presto://ec2-34-231-243-251.compute-1.amazonaws.com:8080</jdbc-url>
     </data-source>
