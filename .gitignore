@@ -23,9 +23,10 @@ pip-selfcheck.json
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-
+.idea/**/dataSources.xml
+.idea/**/dataSources.xml
 # Generated files
-.idea/**/contentModel.xml
+.idea/**/contentModel.*
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
