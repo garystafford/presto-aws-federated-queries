@@ -13,9 +13,19 @@ sudo mv rds_postgresql.properties /etc/presto/catalog/
 
 sudo reboot
 
-DATA_BUCKET=prestodb-demo-databucket-v8gbj2fr6vcc
-EC2_ENDPOINT=ec2-34-231-243-251.compute-1.amazonaws.com
-POSTGRES=presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com
+echo """
+# ** CHANGE ME ** - environment specific
+export DATA_BUCKET=prestodb-demo-databucket-v8gbj2fr6vcc
+export EC2_ENDPOINT=ec2-34-231-243-251.compute-1.amazonaws.com
+export POSTGRES=presto-demo.cxauxtdppqiu.us-east-1.rds.amazonaws.com
+
+# configure and use Apache Hive
+export JAVA_HOME=/usr
+export HADOOP_HOME=~/hadoop
+export HADOOP_CLASSPATH="${HADOOP_HOME}/share/hadoop/tools/lib/*"
+export HIVE_HOME=~/hive
+export PATH="${HIVE_HOME}/bin:${HADOOP_HOME}/bin:${PATH}"
+""" >> .bash_profile
 
 # presto-cli --catalog tpcds --schema sf1
 
@@ -60,28 +70,34 @@ presto-cli \
   --execute "SELECT * FROM tpcds.sf1.customer_address;" \
   --output-format CSV_HEADER >customer_address_quoted.csv
 
+presto-cli \
+  --catalog tpcds \
+  --schema sf1 \
+  --execute "SELECT * FROM tpcds.sf1.customer_demographics;" \
+  --output-format CSV_HEADER >customer_demographics_quoted.csv
+
 # sed 's/"\([[:digit:]]\+\)"/\1/g' customer_quoted.csv > customer.csv
 
 # remove start and end line double quotes
 # remove extra spaces on fixed width columns
 # removes double quotes between fields
-sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' customer_quoted.csv > customer.csv
-sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' customer_address_quoted.csv > customer_address.csv
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+  customer_quoted.csv > customer.csv
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+  customer_address_quoted.csv > customer_address.csv
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+  customer_demographics_quoted.csv > customer_demographics.csv
 
 head -5 customer.csv
 head -5 customer_address.csv
+head -5 customer_demographics.csv
 
 aws s3 cp customer.csv s3://${DATA_BUCKET}/customer/
 aws s3 cp customer_address.csv s3://${DATA_BUCKET}/customer_address/
+aws s3 cp customer_demographics.csv s3://${DATA_BUCKET}/customer_demographics/
 
 # scp -i "~/.ssh/ahana-presto.pem" ec2-user@ec2-100-24-122-163.compute-1.amazonaws.com:~/customer.csv .
 
-# configure and use Apache Hive
-export JAVA_HOME=/usr
-export HADOOP_HOME=~/hadoop
-export HADOOP_CLASSPATH="${HADOOP_HOME}/share/hadoop/tools/lib/*"
-export HIVE_HOME=~/hive
-export PATH="${HIVE_HOME}/bin:${HADOOP_HOME}/bin:${PATH}"
 
 java -version
 openjdk version "1.8.0_252"
@@ -131,6 +147,13 @@ export PGPASSWORD=5up3r53cr3tPa55w0rd
 psql -h ${POSTGRES} -p 5432 -d shipping -U presto
 # copy and paste sql commands
 
+
+presto-cli \
+  --catalog tpcds \
+  --schema sf1 \
+  --file sql/presto_query2.sql \
+  --output-format ALIGNED \
+  --client-tags "query=presto_query2"
 
 presto-cli \
   --catalog tpcds \

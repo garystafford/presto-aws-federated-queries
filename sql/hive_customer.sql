@@ -9,10 +9,10 @@ CREATE EXTERNAL TABLE `customer`(
   `c_salutation` string, 
   `c_first_name` string, 
   `c_last_name` string, 
-  `c_preferred_cust_flag` string, 
-  `c_birth_day` bigint, 
-  `c_birth_month` bigint, 
-  `c_birth_year` bigint, 
+  `c_preferred_cust_flag` char(1), 
+  `c_birth_day` integer, 
+  `c_birth_month` integer, 
+  `c_birth_year` integer, 
   `c_birth_country` string, 
   `c_login` string, 
   `c_email_address` string, 
@@ -24,4 +24,6 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT 
   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION
-  's3a://prestodb-demo-databucket-v8gbj2fr6vcc/customer';
+  's3a://prestodb-demo-databucket-v8gbj2fr6vcc/customer'
+TBLPROPERTIES (
+    'skip.header.line.count' = '1')

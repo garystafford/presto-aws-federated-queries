@@ -2,6 +2,8 @@
 -- Figure 7: Reporting Query (Query 40)
 -- http://www.tpc.org/tpcds/presentations/tpcds_workload_analysis.pdf
 
+-- USE tpcds.sf1
+
 WITH customer_total_return AS (
     SELECT
         cr_returning_customer_sk AS ctr_cust_sk,
