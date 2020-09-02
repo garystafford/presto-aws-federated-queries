@@ -13,5 +13,3 @@ CREATE TABLE customer_address (
     ca_gmt_offset double precision,
     ca_location_type char(20)
 );
-
-\COPY customer_address FROM '/home/ec2-user/customer_address.csv' DELIMITER ',' CSV HEADER;

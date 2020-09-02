@@ -17,12 +17,16 @@ SHOW TABLES;
 CREATE SCHEMA IF NOT EXISTS tpcds;
 
 SHOW TABLES;
+
 DESCRIBE FORMATTED customer;
 
 MSCK REPAIR TABLE customer;
 
 SELECT * FROM customer LIMIT 10;
 
+DROP TABLE customer;
+DROP TABLE customer_address;
+DROP TABLE customer_demographics;
 
 -- http://mail-archives.apache.org/mod_mbox/hive-dev/201707.mbox/%3CCAKcnr5akLtk+tiJ=VzSEF3YrrDj1xu-aFyEUKZ=KgHTYk+XMNA@mail.gmail.com%3E
 set fs.s3.awsAccessKeyId=ABC;

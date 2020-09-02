@@ -16,5 +16,5 @@ OUTPUTFORMAT
   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION
   's3a://prestodb-demo-databucket-v8gbj2fr6vcc/customer_demographics'
-TBLPROPERTIES (
-  'skip.header.line.count' = '1')
+-- TBLPROPERTIES (
+--   'skip.header.line.count' = '1')

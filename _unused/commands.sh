@@ -1,13 +1,30 @@
 EC2_ENDPOINT=ec2-34-231-243-251.compute-1.amazonaws.com
+ # or
+
+ EC2_ENDPOINT=$(\
+  aws ec2 describe-instances \
+      --filters "Name=product-code,Values=ejee5zzmv4tc5o3tr1uul6kg2" \
+          "Name=product-code.type,Values=marketplace" \
+      --query "Reservations[*].Instances[*].{Instance:PublicDnsName}" \
+      --output text)
+
 
 scp -i "~/.ssh/ahana-presto.pem" \
-    properties/rds_postgresql.properties \
-    ec2-user@${EC2_ENDPOINT}:~/
+  properties/rds_postgresql.properties \
+  ec2-user@${EC2_ENDPOINT}:~/
 
 ssh -i "~/.ssh/ahana-presto.pem" ec2-user@${EC2_ENDPOINT}
 
 yes | sudo yum update
 yes | sudo yum install htop
+
+# https://prestodb.io/docs/current/connector/hive.html
+echo """connector.name=hive-hadoop2
+hive.metastore.uri=thrift://localhost:9083
+hive.non-managed-table-writes-enabled=true
+""" >hive.properties
+
+sudo mv hive.properties /etc/presto/catalog/hive.properties
 
 sudo mv rds_postgresql.properties /etc/presto/catalog/
 
@@ -25,7 +42,7 @@ export HADOOP_HOME=~/hadoop
 export HADOOP_CLASSPATH="${HADOOP_HOME}/share/hadoop/tools/lib/*"
 export HIVE_HOME=~/hive
 export PATH="${HIVE_HOME}/bin:${HADOOP_HOME}/bin:${PATH}"
-""" >> .bash_profile
+""" >>~/.bash_profile
 
 # presto-cli --catalog tpcds --schema sf1
 
@@ -58,23 +75,58 @@ export PATH="${HIVE_HOME}/bin:${HADOOP_HOME}/bin:${PATH}"
 #   --file customer_address.sql \
 #   --output-format CSV_HEADER >customer_address_quoted.csv
 
-presto-cli \
-  --catalog tpcds \
-  --schema sf1 \
-  --execute "SELECT * FROM tpcds.sf1.customer;" \
-  --output-format CSV_HEADER >customer_quoted.csv
+# presto-cli \
+#   --catalog tpcds \
+#   --schema sf1 \
+#   --execute "SELECT * FROM tpcds.sf1.customer;" \
+#   --output-format CSV_HEADER >customer_quoted.csv
+
+# presto-cli \
+#   --catalog tpcds \
+#   --schema sf1 \
+#   --execute "SELECT * FROM tpcds.sf1.customer_address;" \
+#   --output-format CSV_HEADER >customer_address_quoted.csv
+
+# presto-cli \
+#   --catalog tpcds \
+#   --schema sf1 \
+#   --execute "SELECT * FROM tpcds.sf1.customer_demographics;" \
+#   --output-format CSV_HEADER >customer_demographics_quoted.csv
 
 presto-cli \
   --catalog tpcds \
   --schema sf1 \
-  --execute "SELECT * FROM tpcds.sf1.customer_address;" \
-  --output-format CSV_HEADER >customer_address_quoted.csv
+  --execute "INSERT INTO hive.default.customer SELECT * FROM tpcds.sf1.customer;"
 
 presto-cli \
   --catalog tpcds \
   --schema sf1 \
-  --execute "SELECT * FROM tpcds.sf1.customer_demographics;" \
-  --output-format CSV_HEADER >customer_demographics_quoted.csv
+  --execute "INSERT INTO hive.default.customer_address SELECT * FROM tpcds.sf1.customer_address;"
+
+presto-cli \
+  --catalog tpcds \
+  --schema sf1 \
+  --execute "INSERT INTO hive.default.customer_demographics SELECT * FROM tpcds.sf1.customer_demographics;"
+
+presto-cli \
+  --catalog tpcds \
+  --schema sf1 \
+  --execute """
+      INSERT INTO hive.default.customer_demographics
+      SELECT
+          *
+      FROM
+          tpcds.sf1.customer_demographics;
+"""
+presto-cli --execute """
+INSERT INTO hive.default.customer
+SELECT * FROM tpcds.sf1.customer;
+"""
+
+presto-cli --execute """
+INSERT INTO rds_postgresql.public.customer_address
+SELECT * FROM tpcds.sf1.customer_address;
+"""
 
 # sed 's/"\([[:digit:]]\+\)"/\1/g' customer_quoted.csv > customer.csv
 
@@ -89,11 +141,11 @@ presto-cli \
 #   customer_demographics_quoted.csv > customer_demographics.csv
 
 sed -e 's/^\"//g' -e 's/\"$//g' -e 's/\",\"/,/g' \
-  customer_quoted.csv > customer.csv
+  customer_quoted.csv >customer.csv
 sed -e 's/^\"//g' -e 's/\"$//g' -e 's/\",\"/,/g' \
-  customer_address_quoted.csv > customer_address.csv
+  customer_address_quoted.csv >customer_address.csv
 sed -e 's/^\"//g' -e 's/\"$//g' -e 's/\",\"/,/g' \
-  customer_demographics_quoted.csv > customer_demographics.csv
+  customer_demographics_quoted.csv >customer_demographics.csv
 
 head -5 customer.csv
 head -5 customer_address.csv
@@ -105,26 +157,25 @@ aws s3 cp customer_demographics.csv s3://${DATA_BUCKET}/customer_demographics/
 
 # scp -i "~/.ssh/ahana-presto.pem" ec2-user@ec2-100-24-122-163.compute-1.amazonaws.com:~/customer.csv .
 
-
 java -version
-openjdk version "1.8.0_252"
-OpenJDK Runtime Environment (build 1.8.0_252-b09)
-OpenJDK 64-Bit Server VM (build 25.252-b09, mixed mode)
+# openjdk version "1.8.0_252"
+# OpenJDK Runtime Environment (build 1.8.0_252-b09)
+# OpenJDK 64-Bit Server VM (build 25.252-b09, mixed mode)
 
 hadoop version
-Hadoop 2.9.2
+# Hadoop 2.9.2
 
 postgres --version
-postgres (PostgreSQL) 9.2.24
+# postgres (PostgreSQL) 9.2.24
 
 psql --version
-psql (PostgreSQL) 9.2.24
+# psql (PostgreSQL) 9.2.24
 
 hive --version
-Hive 2.3.7
+# Hive 2.3.7
 
 presto-cli --version
-Presto CLI 0.235-cb21100
+# Presto CLI 0.235-cb21100
 
 psql -l
 
@@ -136,12 +187,12 @@ cat /etc/presto/node.properties
 cat /etc/presto/catalog/rds_postgresql.properties
 
 scp -i "~/.ssh/ahana-presto.pem" \
-    ahana_presto_aws/sql/hive_customer.sql \
-    ec2-user@${EC2_ENDPOINT}:~/
+  ahana_presto_aws/sql/hive_customer.sql \
+  ec2-user@${EC2_ENDPOINT}:~/
 
 scp -i "~/.ssh/ahana-presto.pem" \
-    ahana_presto_aws/sql/hive_customer_address.sql \
-    ec2-user@${EC2_ENDPOINT}:~/
+  ahana_presto_aws/sql/hive_customer_address.sql \
+  ec2-user@${EC2_ENDPOINT}:~/
 
 hive
 # copy and paste sql commands
