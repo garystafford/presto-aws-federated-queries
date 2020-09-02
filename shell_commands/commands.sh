@@ -81,11 +81,18 @@ presto-cli \
 # remove start and end line double quotes
 # remove extra spaces on fixed width columns
 # removes double quotes between fields
-sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+# sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+#   customer_quoted.csv > customer.csv
+# sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+#   customer_address_quoted.csv > customer_address.csv
+# sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+#   customer_demographics_quoted.csv > customer_demographics.csv
+
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/\",\"/,/g' \
   customer_quoted.csv > customer.csv
-sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/\",\"/,/g' \
   customer_address_quoted.csv > customer_address.csv
-sed -e 's/^\"//g' -e 's/\"$//g' -e 's/ \{0,\}\",\"/,/g' \
+sed -e 's/^\"//g' -e 's/\"$//g' -e 's/\",\"/,/g' \
   customer_demographics_quoted.csv > customer_demographics.csv
 
 head -5 customer.csv
@@ -147,6 +154,11 @@ export PGPASSWORD=5up3r53cr3tPa55w0rd
 psql -h ${POSTGRES} -p 5432 -d shipping -U presto
 # copy and paste sql commands
 
+psql -h ${POSTGRES} -p 5432 -d shipping -U presto \
+  -f sql/postgres_customer_address.sql
+
+psql -h ${POSTGRES} -p 5432 -d shipping -U presto \
+  -c "SELECT COUNT(*) FROM customer_address;"
 
 presto-cli \
   --catalog tpcds \
