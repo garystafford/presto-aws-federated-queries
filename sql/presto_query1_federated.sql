@@ -1,4 +1,5 @@
 -- USE tpcds.sf1
+
 SELECT
     (year (now()) - c_birth_year) AS age,
     cd_credit_rating AS credit_rating,

@@ -1,20 +1,4 @@
 -- USE tpcds.sf1
--- SELECT DISTINCT
---     c_last_name,
---     c_first_name,
---     c_email_address,
---     cd_gender,
---     cd_education_status,
---     cd_credit_rating
--- FROM
---     customer
---     LEFT OUTER JOIN customer_demographics ON c_current_cdemo_sk = cd_demo_sk
--- WHERE
---     c_last_name IS NOT NULL
---     AND c_first_name IS NOT NULL
--- ORDER BY
---     c_last_name,
---     c_first_name;
 
 SELECT
     (year (now()) - c_birth_year) AS age,
