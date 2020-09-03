@@ -15,4 +15,4 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT 
   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION
-  's3a://prestodb-demo-databucket-a1b2c3d4e5/customer_demographics';
+  's3a://prestodb-demo-databucket-CHANGE_ME/customer_demographics';
