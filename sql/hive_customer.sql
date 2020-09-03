@@ -1,4 +1,4 @@
-CREATE EXTERNAL TABLE `customer`(
+CREATE EXTERNAL TABLE IF NOT EXISTS `customer`(
   `c_customer_sk` bigint, 
   `c_customer_id` char(16),
   `c_current_cdemo_sk` bigint, 
@@ -17,11 +17,7 @@ CREATE EXTERNAL TABLE `customer`(
   `c_login` char(13),
   `c_email_address` char(50),
   `c_last_review_date_sk` bigint)
-ROW FORMAT DELIMITED 
-  FIELDS TERMINATED BY ',' 
-STORED AS INPUTFORMAT 
-  'org.apache.hadoop.mapred.TextInputFormat' 
-OUTPUTFORMAT 
-  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+STORED AS PARQUET
 LOCATION
-  's3a://prestodb-demo-databucket-CHANGE_ME/customer';
+  's3a://prestodb-demo-databucket-CHANGE_ME/customer'
+TBLPROPERTIES ('parquet.compression'='SNAPPY');

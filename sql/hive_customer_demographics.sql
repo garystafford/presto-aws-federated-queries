@@ -1,4 +1,4 @@
-CREATE EXTERNAL TABLE `customer_demographics`(
+CREATE EXTERNAL TABLE IF NOT EXISTS `customer_demographics`(
   `cd_demo_sk` bigint,
   `cd_gender` char(1),
   `cd_marital_status` char(1),
@@ -8,11 +8,7 @@ CREATE EXTERNAL TABLE `customer_demographics`(
   `cd_dep_count` integer,
   `cd_dep_employed_count` integer,
   `cd_dep_college_count` integer)
-ROW FORMAT DELIMITED 
-  FIELDS TERMINATED BY ',' 
-STORED AS INPUTFORMAT 
-  'org.apache.hadoop.mapred.TextInputFormat' 
-OUTPUTFORMAT 
-  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+STORED AS PARQUET
 LOCATION
-  's3a://prestodb-demo-databucket-CHANGE_ME/customer_demographics';
+  's3a://prestodb-demo-databucket-CHANGE_ME/customer_demographics'
+TBLPROPERTIES ('parquet.compression'='SNAPPY');

@@ -1,4 +1,4 @@
-CREATE EXTERNAL TABLE `customer_address`(
+CREATE EXTERNAL TABLE IF NOT EXISTS `customer_address`(
     `ca_address_sk` bigint,
     `ca_address_id` char(16),
     `ca_street_number` char(10),
@@ -13,11 +13,7 @@ CREATE EXTERNAL TABLE `customer_address`(
     `ca_location_type` char(20)
 )
 PARTITIONED BY (`ca_state` char(2))
-ROW FORMAT DELIMITED 
-  FIELDS TERMINATED BY ',' 
-STORED AS INPUTFORMAT 
-  'org.apache.hadoop.mapred.TextInputFormat' 
-OUTPUTFORMAT 
-  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+STORED AS PARQUET
 LOCATION
-  's3a://prestodb-demo-databucket-CHANGE_ME/customer_address';
+  's3a://prestodb-demo-databucket-CHANGE_ME/customer_address'
+TBLPROPERTIES ('parquet.compression'='SNAPPY');
