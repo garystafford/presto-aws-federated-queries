@@ -24,6 +24,4 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT 
   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION
-  's3a://prestodb-demo-databucket-v8gbj2fr6vcc/customer'
--- TBLPROPERTIES (
---     'skip.header.line.count' = '1')
+  's3a://prestodb-demo-databucket-v8gbj2fr6vcc/customer';
