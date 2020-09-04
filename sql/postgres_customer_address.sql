@@ -1,4 +1,4 @@
-CREATE TABLE customer_address (
+CREATE TABLE IF NOT EXISTS customer_address (
     ca_address_sk bigint,
     ca_address_id char(16),
     ca_street_number char(10),
